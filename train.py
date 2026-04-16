@@ -18,14 +18,11 @@ model = RandomForestClassifier(
     random_state=42
 )
 
-model.fit(X_train, y_train)
+model.fit(X_train, None)
 
 preds = model.predict(X_test)
 accuracy = accuracy_score(y_test, preds)
 
 print(f"Accuracy: {accuracy}")
 
-with open("model_info.txt", "w") as f:
-    f.write(str(accuracy))
-    
 raise Exception("forced failure for testing A6 pipeline")
