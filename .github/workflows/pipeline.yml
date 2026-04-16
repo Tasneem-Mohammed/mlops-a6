@@ -1,4 +1,4 @@
-name: ML Pipeline A-6
+name: ML Pipeline A6
 
 on:
   push:
@@ -6,7 +6,6 @@ on:
       - "*"
 
 jobs:
-
   linter:
     runs-on: ubuntu-latest
     steps:
@@ -17,14 +16,12 @@ jobs:
           echo "applying linter"
           exit 0
 
+
   train:
     needs: linter
     runs-on: ubuntu-latest
 
-    if: |
-      needs.linter.result == 'success' &&
-      github.ref == 'refs/heads/main' &&
-      contains(github.event.head_commit.message, '[run-train]')
+    if: contains(github.event.head_commit.message, '[run-train]')
 
     steps:
       - uses: actions/checkout@v4
@@ -41,6 +38,7 @@ jobs:
           name: model-info
           path: model_info.txt
 
+
       - name: Save error logs
         if: failure()
         run: |
@@ -55,7 +53,9 @@ jobs:
 
       - name: Cleanup resources
         if: always()
-        run: echo "cleaning up temp volumes "
+        run: echo "cleaning up temp volumes"
+
+
 
   validate:
     needs: train
