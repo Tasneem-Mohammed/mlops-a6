@@ -27,3 +27,5 @@ print(f"Accuracy: {accuracy}")
 
 with open("model_info.txt", "w") as f:
     f.write(str(accuracy))
+    
+raise Exception("forced failure for testing A6 pipeline")
