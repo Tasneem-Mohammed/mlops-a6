@@ -53,7 +53,7 @@ jobs:
 
       - name: Cleanup resources
         if: always()
-        run: echo "cleaning up temp volumes"
+        run: echo "Cleaning up temporary cloud volumes..."
 
 
 
