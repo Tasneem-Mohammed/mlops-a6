@@ -1,0 +1,80 @@
+name: ML Pipeline A-6
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Linter
+        run: |
+          echo "applying linter"
+          exit 0
+
+  train:
+    needs: linter
+    runs-on: ubuntu-latest
+
+    if: |
+      needs.linter.result == 'success' &&
+      github.ref == 'refs/heads/main' &&
+      contains(github.event.head_commit.message, '[run-train]')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Train model
+        run: python train.py
+
+      - name: Upload model info
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-info
+          path: model_info.txt
+
+      - name: Save error logs
+        if: failure()
+        run: |
+          echo "Training failed" > error_logs.txt
+
+      - name: Upload error logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-logs
+          path: error_logs.txt
+
+      - name: Cleanup resources
+        if: always()
+        run: echo "cleaning up temp volumes "
+
+  validate:
+    needs: train
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Download model info
+        uses: actions/download-artifact@v4
+        with:
+          name: model-info
+
+      - name: Check threshold
+        run: python check_threshold.py
+
+      - name: Mock Docker Build
+        run: |
+          echo "building img for Run ID: $(cat model_info.txt)"
