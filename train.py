@@ -24,7 +24,6 @@ preds = model.predict(X_test)
 accuracy = accuracy_score(y_test, preds)
 
 print(f"Accuracy: {accuracy}")
-raise Exception("forced failure for testing A-6 pipeline")
 
 with open("model_info.txt", "w") as f:
     f.write(str(accuracy))
